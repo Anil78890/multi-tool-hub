@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus PDF Hub - Multi Tool Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/index.css">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@pdfsmaller/pdf-encrypt-lite@1.0.2/dist/index.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+    <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body class="theme-bg-primary theme-text-primary font-sans overflow-x-hidden transition-colors duration-300">
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 theme-bg-accent border-b border-[#2563eb]/20 px-6 py-4 flex justify-between items-center shadow-sm transition-colors duration-300">
+        <div class="flex items-center gap-3 cursor-pointer group" id="logo-toggle">
+            <div class="w-10 h-10 rounded-full border-2 border-[#2563eb] flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                <svg viewBox="0 0 24 24" class="w-6 h-6 text-[#2563eb]" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+            </div>
+            <h1 class="font-sans text-xl font-bold theme-text-primary tracking-wider">NEXUS PDF HUB</h1>
+        </div>
+        
+        <div class="hidden md:flex gap-8 items-center">
+            <a href="#" class="nav-link text-sm uppercase tracking-wider">Home</a>
+            <a href="#tools" class="nav-link text-sm uppercase tracking-wider">Tools</a>
+            <a href="#about" class="nav-link text-sm uppercase tracking-wider">About</a>
+            <a href="#contact" class="nav-link text-sm uppercase tracking-wider">Contact</a>
+            
+            <!-- Theme Toggle Button (Desktop) -->
+            <button id="theme-toggle-desktop" class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-all">
+                <svg id="sun-icon-desktop" viewBox="0 0 24 24" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+                <svg id="moon-icon-desktop" viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+            <button id="logout-btn" class="hidden border border-red-200 text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-sans text-xs font-bold uppercase tracking-wider transition-all">Logout</button>
+        </div>
+
+        <div class="flex items-center gap-4 md:hidden">
+            <!-- Theme Toggle Button (Mobile) -->
+            <button id="theme-toggle-mobile" class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-all">
+                <svg id="sun-icon-mobile" viewBox="0 0 24 24" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+                <svg id="moon-icon-mobile" viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+            
+            <button class="text-[#2563eb]" id="mobile-menu-btn">
+                <svg viewBox="0 0 24 24" class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Sidebar & Main Content Wrapper -->
+    <div class="flex pt-20 min-h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed left-0 top-20 bottom-0 w-64 theme-bg-secondary border-r border-slate-100 transition-all duration-300 z-40 overflow-y-auto scrollbar-hide md:translate-x-0 -translate-x-full">
+            <div class="p-6 space-y-8">
+                <section id="sidebar-pdf-section">
+                    <h3 class="text-slate-400 font-sans text-[10px] uppercase tracking-widest mb-4 font-bold">PDF Tools</h3>
+                    <ul class="space-y-1" id="sidebar-pdf-tools"></ul>
+                </section>
+                <section id="sidebar-utility-section" class="hidden">
+                    <h3 class="text-slate-400 font-sans text-[10px] uppercase tracking-widest mb-4 font-bold">Utility Tools</h3>
+                    <ul class="space-y-1" id="sidebar-utility-tools"></ul>
+                </section>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="main-content" class="flex-1 md:ml-64 p-6 md:p-12 transition-all duration-300 theme-bg-primary">
+            <!-- Hero Section -->
+            <section class="mb-20 text-center py-12">
+                <h2 class="font-sans text-4xl md:text-5xl font-bold theme-text-primary mb-6 leading-tight">
+                    Professional <span class="text-[#2563eb]">Document Management</span> Solution
+                </h2>
+                <p class="text-lg theme-text-secondary max-w-2xl mx-auto mb-10">
+                    High-performance document processing and utility toolset. Secure, client-side, and optimized for professional workflows.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="#tools" class="glow-button px-8 py-3 rounded-lg font-sans font-bold uppercase tracking-wider">Explore Tools</a>
+                    <button id="learn-more-btn" class="border border-slate-200 text-slate-600 hover:bg-slate-50 px-8 py-3 rounded-lg font-sans font-bold uppercase tracking-wider transition-all">Learn More</button>
+                </div>
+            </section>
+
+            <!-- Tools Grid -->
+            <section id="tools" class="space-y-12">
+                <div>
+                    <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+                        <h2 class="font-sans text-xl font-bold theme-text-primary flex items-center gap-3">
+                            <span class="w-2 h-6 bg-[#2563eb] rounded-full"></span>
+                            PDF Power Tools
+                        </h2>
+                        <button id="toggle-pdf-btn" class="flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-lg font-sans text-xs font-bold uppercase tracking-wider transition-all">
+                            <span>Hide Tools</span>
+                            <svg viewBox="0 0 24 24" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="pdf-tools-container" class="transition-all duration-300">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="pdf-grid"></div>
+                    </div>
+                </div>
+
+                <div id="utility-section-wrapper">
+                    <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+                        <h2 class="font-sans text-xl font-bold theme-text-primary flex items-center gap-3">
+                            <span class="w-2 h-6 bg-[#2563eb] rounded-full"></span>
+                            Utility Tools
+                        </h2>
+                        <button id="toggle-utility-btn" class="flex items-center gap-2 border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-lg font-sans text-xs font-bold uppercase tracking-wider transition-all">
+                            <span>Show Tools</span>
+                            <svg viewBox="0 0 24 24" class="w-4 h-4 transform rotate-180 transition-transform" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="utility-tools-container" class="hidden transition-all duration-300">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="utility-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" class="mt-32 py-20 border-t border-slate-100 bg-slate-50/50 rounded-3xl">
+                <div class="max-w-7xl mx-auto px-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        <div class="space-y-8">
+                            <div class="inline-block px-3 py-1 rounded-full border border-slate-200 text-slate-500 text-[10px] font-sans tracking-widest uppercase font-bold bg-white">
+                                System Overview
+                            </div>
+                            <h2 class="font-sans text-3xl font-bold theme-text-primary leading-tight">
+                                <span class="text-[#2563eb]">Enterprise</span> Infrastructure & Architecture
+                            </h2>
+                            <p class="theme-text-secondary leading-relaxed text-lg">
+                                Nexus PDF Hub is a professional-grade multi-tool platform built for reliability and security. We combine high-performance processing with an intuitive interface to streamline document workflows. 
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+                                <div class="p-6 rounded-2xl border border-slate-100 bg-white shadow-sm">
+                                    <h4 class="text-slate-900 font-sans text-sm mb-2 font-bold uppercase tracking-wider">Speed</h4>
+                                    <p class="text-xs theme-text-secondary leading-relaxed">Optimized for sub-second execution on large datasets using local processing.</p>
+                                </div>
+                                <div class="p-6 rounded-2xl border border-slate-100 bg-white shadow-sm">
+                                    <h4 class="text-slate-900 font-sans text-sm mb-2 font-bold uppercase tracking-wider">Privacy</h4>
+                                    <p class="text-xs theme-text-secondary leading-relaxed">Zero-server architecture ensures your data never leaves your local terminal.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="theme-bg-secondary border border-slate-100 p-10 rounded-3xl shadow-sm relative overflow-hidden">
+                            <h3 class="font-sans text-slate-900 text-sm mb-8 uppercase tracking-widest font-bold">Protocol Hierarchy</h3>
+                            <ul class="space-y-8">
+                                <li class="flex items-start gap-4">
+                                    <div class="w-2 h-2 rounded-full bg-[#2563eb] mt-1.5"></div>
+                                    <div>
+                                        <p class="text-sm theme-text-primary font-bold mb-1">Advanced PDF Reconstruction</p>
+                                        <p class="text-xs theme-text-secondary">Multi-threaded page extraction and secure merging protocols.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4">
+                                    <div class="w-2 h-2 rounded-full bg-[#2563eb] mt-1.5"></div>
+                                    <div>
+                                        <p class="text-sm theme-text-primary font-bold mb-1">Visual Stream Processing</p>
+                                        <p class="text-xs theme-text-secondary">High-fidelity image conversion and lossless compression algorithms.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4">
+                                    <div class="w-2 h-2 rounded-full bg-[#2563eb] mt-1.5"></div>
+                                    <div>
+                                        <p class="text-sm theme-text-primary font-bold mb-1">Encryption Synthesis</p>
+                                        <p class="text-xs theme-text-secondary">Industry-standard protection with automated recovery capabilities.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact" class="theme-bg-secondary border-t border-slate-100 py-12 px-6 mt-20">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-center md:text-left">
+                <h2 class="font-sans text-lg font-bold theme-text-primary mb-1">NEXUS PDF HUB</h2>
+                <p class="text-xs theme-text-secondary">© 2025 Nexus PDF Hub. All Rights Reserved.</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6">
+                <a href="mailto:indonesia6464848@gmail.com" class="theme-text-secondary hover:text-[#2563eb] transition-colors flex items-center gap-2 text-sm">
+                    <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    indonesia6464848@gmail.com
+                </a>
+            </div>
+            <div class="flex gap-3">
+                <a href="https://twitter.com" target="_blank" class="w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center theme-text-primary hover:border-[#2563eb] hover:text-[#2563eb] transition-all">
+                    <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <a href="https://instagram.com" target="_blank" class="w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center theme-text-primary hover:border-[#2563eb] hover:text-[#2563eb] transition-all">
+                    <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Tool Modal -->
+    <div id="tool-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" id="modal-overlay"></div>
+        <div class="relative theme-bg-accent border border-slate-200 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl">
+            <div class="sticky top-0 theme-bg-accent border-b border-slate-100 p-6 flex justify-between items-center z-10">
+                <h2 id="modal-title" class="font-sans text-xl font-bold theme-text-primary">Tool Name</h2>
+                <button id="close-modal" class="theme-text-primary hover:text-[#2563eb] transition-colors">
+                    <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div id="modal-content" class="p-8"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-8 right-8 z-[110] translate-y-20 opacity-0 transition-all duration-300">
+        <div class="bg-slate-900 border border-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+            <div id="toast-icon" class="text-[#2563eb]"></div>
+            <span id="toast-message" class="text-sm font-medium">Message goes here</span>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 z-[200] theme-bg-primary flex items-center justify-center p-4">
+        <div class="w-full max-w-md theme-bg-accent border border-slate-200 rounded-3xl p-8 shadow-2xl">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl bg-[#2563eb]/10 flex items-center justify-center mx-auto mb-4">
+                    <svg viewBox="0 0 24 24" class="w-10 h-10 text-[#2563eb]" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                    </svg>
+                </div>
+                <h2 class="font-sans text-2xl font-bold theme-text-primary tracking-tight">Portal Access</h2>
+                <p class="theme-text-secondary text-sm mt-2">Enter credentials to initialize session</p>
+            </div>
+            
+            <form id="login-form" class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest">Identification</label>
+                    <input type="text" id="login-username" required class="w-full theme-bg-primary border border-slate-200 rounded-xl px-4 py-3 theme-text-primary outline-none focus:border-[#2563eb] transition-all" placeholder="Username">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest">Access Key</label>
+                    <input type="password" id="login-password" required class="w-full theme-bg-primary border border-slate-200 rounded-xl px-4 py-3 theme-text-primary outline-none focus:border-[#2563eb] transition-all" placeholder="••••••••">
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="login-terms" required class="w-4 h-4 accent-[#2563eb] cursor-pointer">
+                    <label for="login-terms" class="text-xs theme-text-secondary cursor-pointer hover:text-[#2563eb] transition-colors">I accept all system protocols and conditions</label>
+                </div>
+
+                <button type="submit" class="w-full bg-[#2563eb] text-white py-4 rounded-xl font-bold tracking-wide uppercase text-sm hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">Initialize Access</button>
+            </form>
+            
+            <div class="mt-8 pt-6 border-t border-slate-100 text-center">
+                <p class="text-[10px] theme-text-secondary uppercase tracking-widest leading-relaxed">
+                    By accessing this terminal, you agree to the <br>
+                    <span class="text-[#2563eb] font-bold">System Terms of Service</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./src/script.js"></script>
+</body>
+</html>
